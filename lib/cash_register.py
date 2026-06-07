@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 class CashRegister:
     def __init__(self, discount=0):
         if isinstance(discount, int) and 0 <= discount <= 100:
@@ -23,7 +22,9 @@ class CashRegister:
 
     def add_item(self, item, price, quantity=1):
         self.total += price * quantity
-        self.items.append(item)
+        # Add item once per quantity
+        for _ in range(quantity):
+            self.items.append(item)
         self.previous_transactions.append({
             "item": item,
             "price": price,
@@ -35,14 +36,13 @@ class CashRegister:
             print("There is no discount to apply.")
             return
         self.total = self.total * (1 - self._discount / 100)
-        last = self.previous_transactions.pop()
-        if last["item"] in self.items:
-            self.items.remove(last["item"])
+        print(f"After the discount, the total comes to ${self.total}.")
 
     def void_last_transaction(self):
         if not self.previous_transactions:
             return
         last = self.previous_transactions.pop()
         self.total -= last["price"] * last["quantity"]
-        if last["item"] in self.items:
-            self.items.remove(last["item"])
+        for _ in range(last["quantity"]):
+            if last["item"] in self.items:
+                self.items.remove(last["item"])
